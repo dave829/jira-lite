@@ -153,18 +153,19 @@ export default async function TeamPage({ params }: TeamPageProps) {
               <div className="space-y-3">
                 {members?.map((member) => {
                   const RoleIcon = roleIcons[member.role as keyof typeof roleIcons];
+                  const memberUser = Array.isArray(member.user) ? member.user[0] : member.user;
                   return (
                     <div key={member.id} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center gap-3">
                         <Avatar>
-                          <AvatarImage src={member.user?.profile_image || undefined} />
+                          <AvatarImage src={memberUser?.profile_image || undefined} />
                           <AvatarFallback>
-                            {member.user?.name?.charAt(0).toUpperCase()}
+                            {memberUser?.name?.charAt(0).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium">{member.user?.name}</p>
-                          <p className="text-sm text-gray-500">{member.user?.email}</p>
+                          <p className="font-medium">{memberUser?.name}</p>
+                          <p className="text-sm text-gray-500">{memberUser?.email}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
