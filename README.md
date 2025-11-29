@@ -54,7 +54,7 @@ AI 기능이 통합된 경량 이슈 트래킹 웹 애플리케이션입니다.
 - **Database**: Supabase (PostgreSQL)
 - **Auth**: Supabase Auth + Google OAuth
 - **UI**: Tailwind CSS + shadcn/ui
-- **AI**: OpenAI API (gpt-4o-mini)
+- **AI**: Google Gemini API (gemini-1.5-flash)
 - **Drag & Drop**: @hello-pangea/dnd
 - **Charts**: Recharts
 - **Deploy**: Vercel
@@ -76,8 +76,8 @@ npm install
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
-# OpenAI
-OPENAI_API_KEY=your_openai_api_key
+# Gemini AI
+GEMINI_API_KEY=your_gemini_api_key
 
 # Resend (Email)
 RESEND_API_KEY=your_resend_api_key
