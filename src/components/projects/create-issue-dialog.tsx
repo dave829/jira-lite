@@ -104,7 +104,7 @@ export function CreateIssueDialog({
         .eq('status_id', statusId)
         .order('position', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       const newPosition = (lastIssue?.position ?? -1) + 1;
 
