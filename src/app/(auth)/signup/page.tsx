@@ -52,17 +52,6 @@ export default function SignUpPage() {
       }
 
       if (authData.user) {
-        // users 테이블에 프로필 생성
-        const { error: profileError } = await supabase.from('users').insert({
-          id: authData.user.id,
-          email: data.email,
-          name: data.name,
-        });
-
-        if (profileError && !profileError.message.includes('duplicate')) {
-          console.error('Profile creation error:', profileError);
-        }
-
         toast.success('회원가입이 완료되었습니다!');
         router.push('/dashboard');
         router.refresh();

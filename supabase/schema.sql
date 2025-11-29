@@ -219,20 +219,39 @@ CREATE POLICY "Users can view all users" ON users FOR SELECT USING (true);
 CREATE POLICY "Users can update own profile" ON users FOR UPDATE USING (auth.uid() = id);
 CREATE POLICY "Users can insert own profile" ON users FOR INSERT WITH CHECK (auth.uid() = id);
 
+-- Helper function to avoid RLS recursion
+CREATE OR REPLACE FUNCTION get_user_team_ids(uid UUID)
+RETURNS SETOF UUID
+LANGUAGE sql
+SECURITY DEFINER
+STABLE
+AS $$
+  SELECT team_id FROM team_members WHERE user_id = uid
+$$;
+
 -- Teams: members can view
 CREATE POLICY "Team members can view teams" ON teams FOR SELECT 
-  USING (id IN (SELECT team_id FROM team_members WHERE user_id = auth.uid()));
-CREATE POLICY "Users can create teams" ON teams FOR INSERT WITH CHECK (auth.uid() = owner_id);
+  TO authenticated
+  USING (owner_id = auth.uid() OR id IN (SELECT get_user_team_ids(auth.uid())));
+CREATE POLICY "Users can create teams" ON teams FOR INSERT 
+  TO authenticated
+  WITH CHECK (owner_id = auth.uid());
 CREATE POLICY "Team owners/admins can update" ON teams FOR UPDATE 
-  USING (id IN (SELECT team_id FROM team_members WHERE user_id = auth.uid() AND role IN ('OWNER', 'ADMIN')));
+  TO authenticated
+  USING (owner_id = auth.uid() OR id IN (SELECT get_user_team_ids(auth.uid())));
 CREATE POLICY "Team owners can delete" ON teams FOR DELETE 
+  TO authenticated
   USING (owner_id = auth.uid());
 
 -- Team Members
 CREATE POLICY "Team members can view members" ON team_members FOR SELECT 
-  USING (team_id IN (SELECT team_id FROM team_members WHERE user_id = auth.uid()));
-CREATE POLICY "Team owners/admins can manage members" ON team_members FOR ALL 
-  USING (team_id IN (SELECT team_id FROM team_members WHERE user_id = auth.uid() AND role IN ('OWNER', 'ADMIN')));
+  USING (team_id IN (SELECT get_user_team_ids(auth.uid())));
+CREATE POLICY "Users can insert own membership" ON team_members FOR INSERT 
+  WITH CHECK (user_id = auth.uid() OR team_id IN (SELECT id FROM teams WHERE owner_id = auth.uid()));
+CREATE POLICY "Team owners/admins can update members" ON team_members FOR UPDATE 
+  USING (team_id IN (SELECT id FROM teams WHERE owner_id = auth.uid()) OR team_id IN (SELECT get_user_team_ids(auth.uid())));
+CREATE POLICY "Team owners/admins can delete members" ON team_members FOR DELETE 
+  USING (team_id IN (SELECT id FROM teams WHERE owner_id = auth.uid()) OR user_id = auth.uid());
 
 -- Team Invitations
 CREATE POLICY "Team members can view invitations" ON team_invitations FOR SELECT 
