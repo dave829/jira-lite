@@ -4,8 +4,8 @@ export interface User {
   email: string;
   name: string;
   profile_image: string | null;
-  created_at: string;
-  deleted_at: string | null;
+  created_at?: string;
+  deleted_at?: string | null;
 }
 
 // Team Types
@@ -94,7 +94,7 @@ export interface Issue {
   status?: ProjectStatus;
   assignee?: User;
   owner?: User;
-  labels?: ProjectLabel[];
+  labels?: { label: ProjectLabel | null }[];
   subtasks?: Subtask[];
 }
 
