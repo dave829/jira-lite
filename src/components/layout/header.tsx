@@ -13,9 +13,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Bell, Menu, LogOut, Settings, User as UserIcon } from 'lucide-react';
+import { Menu, LogOut, Settings, User as UserIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { NotificationPopover } from '@/components/notifications/notification-popover';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 interface HeaderProps {
   user: User | null;
@@ -41,37 +43,33 @@ export function Header({ user }: HeaderProps) {
   };
 
   return (
-    <header className="h-16 bg-white border-b flex items-center justify-between px-6">
+    <header className="h-16 glass-header flex items-center justify-between px-6">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" className="md:hidden">
           <Menu className="h-5 w-5" />
         </Button>
       </div>
 
-      <div className="flex items-center gap-4">
-        <Link href="/notifications">
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            {/* TODO: 알림 개수 표시 */}
-          </Button>
-        </Link>
+      <div className="flex items-center gap-2">
+        <ThemeToggle />
+        <NotificationPopover />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-              <Avatar className="h-8 w-8">
+            <Button variant="ghost" className="relative h-9 w-9 rounded-full p-0 hover:ring-2 hover:ring-border transition-all">
+              <Avatar className="h-9 w-9">
                 <AvatarImage src={user?.profile_image || undefined} alt={user?.name} />
-                <AvatarFallback>
+                <AvatarFallback className="bg-foreground text-background font-medium text-sm">
                   {user?.name?.charAt(0).toUpperCase() || 'U'}
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuContent className="w-56 glass-card" align="end" forceMount>
             <div className="flex items-center justify-start gap-2 p-2">
               <div className="flex flex-col space-y-1 leading-none">
-                <p className="font-medium">{user?.name}</p>
-                <p className="text-xs text-gray-500">{user?.email}</p>
+                <p className="font-medium text-foreground">{user?.name}</p>
+                <p className="text-xs text-muted-foreground">{user?.email}</p>
               </div>
             </div>
             <DropdownMenuSeparator />

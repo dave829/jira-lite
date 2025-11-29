@@ -44,38 +44,38 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --radius: 0.75rem;
+  --background: oklch(0.98 0.005 270);
+  --foreground: oklch(0.2 0.02 270);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.2 0.02 270);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.2 0.02 270);
+  --primary: oklch(0.55 0.25 270);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.02 270);
+  --secondary-foreground: oklch(0.3 0.05 270);
+  --muted: oklch(0.95 0.01 270);
+  --muted-foreground: oklch(0.5 0.02 270);
+  --accent: oklch(0.92 0.03 270);
+  --accent-foreground: oklch(0.3 0.05 270);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --border: oklch(0.9 0.02 270);
+  --input: oklch(0.92 0.02 270);
+  --ring: oklch(0.6 0.2 270);
+  --chart-1: oklch(0.55 0.25 270);
+  --chart-2: oklch(0.65 0.2 300);
+  --chart-3: oklch(0.6 0.15 240);
+  --chart-4: oklch(0.7 0.18 320);
+  --chart-5: oklch(0.5 0.22 250);
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.2 0.02 270);
+  --sidebar-primary: oklch(0.55 0.25 270);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.95 0.03 270);
+  --sidebar-accent-foreground: oklch(0.3 0.05 270);
+  --sidebar-border: oklch(0.92 0.02 270);
+  --sidebar-ring: oklch(0.6 0.2 270);
 }
 
 .dark {
@@ -119,4 +119,104 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Gradient Accent Styles */
+.gradient-primary {
+  @apply bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500;
+}
+
+.gradient-primary-hover {
+  @apply bg-gradient-to-r from-blue-700 via-purple-700 to-pink-600;
+}
+
+.gradient-text {
+  @apply bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 bg-clip-text text-transparent;
+}
+
+.gradient-border {
+  @apply border-transparent bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500;
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.card-gradient {
+  @apply bg-white shadow-lg shadow-purple-100/50 hover:shadow-xl hover:shadow-purple-200/50 transition-all duration-300;
+}
+
+.btn-gradient {
+  @apply bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white hover:from-blue-700 hover:via-purple-700 hover:to-pink-600 transition-all duration-300 shadow-md hover:shadow-lg;
+}
+
+/* Neumorphism Styles */
+.neu-flat {
+  background: #f0f0f3;
+  box-shadow: 6px 6px 12px #d1d1d4, -6px -6px 12px #ffffff;
+}
+
+.neu-pressed {
+  background: linear-gradient(145deg, #e6e6e9, #f0f0f3);
+  box-shadow: inset 4px 4px 8px #d1d1d4, inset -4px -4px 8px #ffffff;
+}
+
+.neu-card {
+  background: linear-gradient(145deg, #fafafa, #f0f0f3);
+  box-shadow: 8px 8px 16px rgba(209, 209, 212, 0.6), -8px -8px 16px rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.neu-card:hover {
+  box-shadow: 10px 10px 20px rgba(209, 209, 212, 0.7), -10px -10px 20px rgba(255, 255, 255, 0.9);
+  transform: translateY(-2px);
+}
+
+.neu-btn {
+  background: linear-gradient(145deg, #f5f5f8, #e8e8eb);
+  box-shadow: 5px 5px 10px rgba(209, 209, 212, 0.5), -5px -5px 10px rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.neu-btn:hover {
+  box-shadow: 3px 3px 6px rgba(209, 209, 212, 0.5), -3px -3px 6px rgba(255, 255, 255, 0.8);
+}
+
+.neu-btn:active {
+  box-shadow: inset 3px 3px 6px rgba(209, 209, 212, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.8);
+}
+
+.neu-input {
+  background: #f0f0f3;
+  box-shadow: inset 3px 3px 6px rgba(209, 209, 212, 0.5), inset -3px -3px 6px rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  border: none;
+}
+
+.neu-input:focus {
+  box-shadow: inset 4px 4px 8px rgba(209, 209, 212, 0.6), inset -4px -4px 8px rgba(255, 255, 255, 0.9), 0 0 0 3px rgba(139, 92, 246, 0.3);
+}
+
+/* Gradient + Neumorphism Combo */
+.neu-gradient-card {
+  background: linear-gradient(145deg, #fafafa, #f0f0f3);
+  box-shadow: 8px 8px 16px rgba(209, 209, 212, 0.5), -8px -8px 16px rgba(255, 255, 255, 0.8), inset 0 0 0 1px rgba(139, 92, 246, 0.1);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.neu-gradient-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
+}
+
+.neu-avatar {
+  box-shadow: 4px 4px 8px rgba(209, 209, 212, 0.5), -4px -4px 8px rgba(255, 255, 255, 0.8);
+  border: 3px solid #f0f0f3;
 }
