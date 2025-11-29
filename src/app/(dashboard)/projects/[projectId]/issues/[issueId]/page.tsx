@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { notFound, redirect } from 'next/navigation';
 import { IssueDetail } from '@/components/issues/issue-detail';
+import { User } from '@/types';
 
 interface IssuePageProps {
   params: Promise<{ projectId: string; issueId: string }>;
@@ -129,7 +130,7 @@ export default async function IssuePage({ params }: IssuePageProps) {
       statuses={statuses || []}
       comments={comments || []}
       history={history || []}
-      teamMembers={teamMembers?.map((tm) => tm.user).filter(Boolean) || []}
+      teamMembers={(teamMembers?.map((tm) => tm.user).flat().filter(Boolean) || []) as unknown as (User | null)[]}
       aiCache={aiCache || []}
       currentUserId={user.id}
       currentUser={currentUser}
