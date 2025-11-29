@@ -61,7 +61,7 @@ export function TeamActivityLog({ teamId }: TeamActivityLogProps) {
       setIsLoading(false);
     };
     loadInitial();
-  }, [teamId]);
+  }, [fetchLogs, teamId]);
 
   const loadMore = async () => {
     const nextPage = page + 1;
@@ -73,35 +73,35 @@ export function TeamActivityLog({ teamId }: TeamActivityLogProps) {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="glass-card border-border/50">
         <CardContent className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card>
+    <Card className="glass-card border-border/50">
       <CardHeader>
-        <CardTitle className="text-base">활동 로그</CardTitle>
+        <CardTitle className="text-base text-foreground">활동 로그</CardTitle>
       </CardHeader>
       <CardContent>
         {logs.length > 0 ? (
           <div className="space-y-4">
             {logs.map((log) => (
-              <div key={log.id} className="flex items-start gap-3 pb-4 border-b last:border-0">
-                <Avatar className="h-8 w-8">
+              <div key={log.id} className="flex items-start gap-3 pb-4 border-b border-border/50 last:border-0">
+                <Avatar className="h-8 w-8 border border-border/50">
                   <AvatarImage src={log.actor?.profile_image || undefined} />
-                  <AvatarFallback>
+                  <AvatarFallback className="bg-foreground/10 text-foreground text-sm">
                     {log.actor?.name?.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm">
+                  <p className="text-sm text-foreground">
                     <span className="font-medium">{log.actor?.name}</span>
                     {' '}
-                    <span className="text-gray-600">
+                    <span className="text-muted-foreground">
                       {actionLabels[log.action] || log.action}
                     </span>
                     {log.details && typeof log.details === 'object' && (
@@ -117,14 +117,14 @@ export function TeamActivityLog({ teamId }: TeamActivityLogProps) {
                           </span>
                         )}
                         {(log.details as Record<string, unknown>).new_role && (
-                          <span className="text-gray-500">
+                          <span className="text-muted-foreground">
                             {' '}→ {(log.details as Record<string, unknown>).new_role as string}
                           </span>
                         )}
                       </>
                     )}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     {format(new Date(log.created_at), 'yyyy년 M월 d일 HH:mm', { locale: ko })}
                   </p>
                 </div>
@@ -133,14 +133,14 @@ export function TeamActivityLog({ teamId }: TeamActivityLogProps) {
             {hasMore && (
               <button
                 onClick={loadMore}
-                className="w-full py-2 text-sm text-blue-600 hover:text-blue-800"
+                className="w-full py-2 text-sm text-foreground hover:text-foreground/80 transition-colors"
               >
                 더 보기
               </button>
             )}
           </div>
         ) : (
-          <p className="text-center text-gray-500 py-8">활동 로그가 없습니다</p>
+          <p className="text-center text-muted-foreground py-8">활동 로그가 없습니다</p>
         )}
       </CardContent>
     </Card>

@@ -120,14 +120,14 @@ export function InviteMemberDialog({ teamId }: InviteMemberDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="bg-foreground text-background hover:bg-foreground/90">
           <UserPlus className="h-4 w-4 mr-2" />
           멤버 초대
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="glass-card border-border/50">
         <DialogHeader>
-          <DialogTitle>멤버 초대</DialogTitle>
+          <DialogTitle className="text-foreground">멤버 초대</DialogTitle>
           <DialogDescription>
             이메일 주소를 입력하여 팀에 멤버를 초대하세요
           </DialogDescription>
@@ -135,23 +135,24 @@ export function InviteMemberDialog({ teamId }: InviteMemberDialogProps) {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="email">이메일</Label>
+              <Label htmlFor="email" className="text-foreground">이메일</Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="email@example.com"
+                className="bg-background/50 border-border"
                 {...register('email')}
               />
               {errors.email && (
-                <p className="text-sm text-red-500">{errors.email.message}</p>
+                <p className="text-sm text-destructive">{errors.email.message}</p>
               )}
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
+            <Button type="button" variant="outline" onClick={() => setIsOpen(false)} className="border-border">
               취소
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading} className="bg-foreground text-background hover:bg-foreground/90">
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               초대 보내기
             </Button>

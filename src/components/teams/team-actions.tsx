@@ -145,25 +145,26 @@ export function TeamActions({ team, currentRole, isOwner }: TeamActionsProps) {
 
       {/* 팀 이름 수정 다이얼로그 */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-        <DialogContent>
+        <DialogContent className="glass-card border-border/50">
           <DialogHeader>
-            <DialogTitle>팀 이름 수정</DialogTitle>
+            <DialogTitle className="text-foreground">팀 이름 수정</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="teamName">팀 이름</Label>
+              <Label htmlFor="teamName" className="text-foreground">팀 이름</Label>
               <Input
                 id="teamName"
                 value={teamName}
                 onChange={(e) => setTeamName(e.target.value)}
+                className="bg-background/50 border-border"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditOpen(false)}>
+            <Button variant="outline" onClick={() => setIsEditOpen(false)} className="border-border">
               취소
             </Button>
-            <Button onClick={handleUpdate} disabled={isLoading}>
+            <Button onClick={handleUpdate} disabled={isLoading} className="bg-foreground text-background hover:bg-foreground/90">
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               저장
             </Button>
@@ -173,9 +174,9 @@ export function TeamActions({ team, currentRole, isOwner }: TeamActionsProps) {
 
       {/* 팀 삭제 다이얼로그 */}
       <Dialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
-        <DialogContent>
+        <DialogContent className="glass-card border-border/50">
           <DialogHeader>
-            <DialogTitle>팀 삭제</DialogTitle>
+            <DialogTitle className="text-foreground">팀 삭제</DialogTitle>
             <DialogDescription>
               정말로 &quot;{team.name}&quot; 팀을 삭제하시겠습니까?
               <br />
@@ -183,7 +184,7 @@ export function TeamActions({ team, currentRole, isOwner }: TeamActionsProps) {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteOpen(false)}>
+            <Button variant="outline" onClick={() => setIsDeleteOpen(false)} className="border-border">
               취소
             </Button>
             <Button variant="destructive" onClick={handleDelete} disabled={isLoading}>
@@ -196,15 +197,15 @@ export function TeamActions({ team, currentRole, isOwner }: TeamActionsProps) {
 
       {/* 팀 탈퇴 다이얼로그 */}
       <Dialog open={isLeaveOpen} onOpenChange={setIsLeaveOpen}>
-        <DialogContent>
+        <DialogContent className="glass-card border-border/50">
           <DialogHeader>
-            <DialogTitle>팀 탈퇴</DialogTitle>
+            <DialogTitle className="text-foreground">팀 탈퇴</DialogTitle>
             <DialogDescription>
               정말로 &quot;{team.name}&quot; 팀에서 탈퇴하시겠습니까?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsLeaveOpen(false)}>
+            <Button variant="outline" onClick={() => setIsLeaveOpen(false)} className="border-border">
               취소
             </Button>
             <Button variant="destructive" onClick={handleLeave} disabled={isLoading}>
