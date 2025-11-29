@@ -97,23 +97,23 @@ export function ProjectDashboard({ issues, statuses }: ProjectDashboardProps) {
         </CardHeader>
         <CardContent>
           {issues.length > 0 ? (
-            <ResponsiveContainer width="100%" height={200}>
-              <PieChart>
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                 <Pie
                   data={statusData}
                   cx="50%"
                   cy="50%"
                   innerRadius={40}
-                  outerRadius={80}
+                  outerRadius={70}
                   paddingAngle={2}
                   dataKey="value"
-                  label={({ name, value }) => `${name}: ${value}`}
                 >
                   {statusData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
                 <Tooltip />
+                <Legend />
               </PieChart>
             </ResponsiveContainer>
           ) : (
