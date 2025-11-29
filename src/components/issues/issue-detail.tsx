@@ -11,11 +11,11 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { IssueActions } from './issue-actions';
-import { SubtaskList } from './subtask-list';
-import { CommentSection } from './comment-section';
-import { IssueHistoryList } from './issue-history-list';
-import { AIFeatures } from './ai-features';
+import { IssueActions } from '@/components/issues/issue-actions';
+import { SubtaskList } from '@/components/issues/subtask-list';
+import { CommentSection } from '@/components/issues/comment-section';
+import { IssueHistoryList } from '@/components/issues/issue-history-list';
+import { AIFeatures } from '@/components/issues/ai-features';
 import { ArrowLeft, Calendar, User as UserIcon } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -34,7 +34,7 @@ interface IssueDetailProps {
   teamMembers: (User | null)[];
   aiCache: AICache[];
   currentUserId: string;
-  currentUser?: User | null;
+  currentUser?: User | null | undefined;
   canEdit: boolean;
   canDelete: boolean;
 }
@@ -52,7 +52,7 @@ export function IssueDetail({
   canEdit,
   canDelete,
 }: IssueDetailProps) {
-  const router = useRouter();
+  //const router = useRouter();
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -98,16 +98,16 @@ export function IssueDetail({
                 >
                   {PRIORITY_LABELS[issue.priority]}
                 </Badge>
-                {issue.labels?.filter(Boolean).map((label) => (
+                {issue.labels?.filter((l) => l.label).map((item) => (
                   <Badge
-                    key={label!.id}
+                    key={item.label!.id}
                     variant="outline"
                     style={{
-                      borderColor: label!.color,
-                      color: label!.color,
+                      borderColor: item.label!.color,
+                      color: item.label!.color,
                     }}
                   >
-                    {label!.name}
+                    {item.label!.name}
                   </Badge>
                 ))}
               </div>
