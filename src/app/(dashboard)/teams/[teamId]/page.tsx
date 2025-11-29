@@ -189,6 +189,11 @@ export default async function TeamPage({ params }: TeamPageProps) {
                 <FolderKanban className="h-12 w-12 text-muted-foreground mb-4" />
                 <h3 className="text-lg font-medium mb-2 text-foreground">프로젝트가 없습니다</h3>
                 <p className="text-muted-foreground mb-4">새 프로젝트를 만들어 시작하세요</p>
+                <Link href={`/teams/${teamId}/projects/new`}>
+                  <button className="px-4 py-2 bg-foreground text-background rounded-md hover:bg-foreground/90 transition-colors">
+                    새 프로젝트 만들기
+                  </button>
+                </Link>
               </CardContent>
             </Card>
           )}

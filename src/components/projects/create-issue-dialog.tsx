@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -52,18 +53,21 @@ export function CreateIssueDialog({
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
-  } = useForm({
+  } = useForm<IssueInput>({
     resolver: zodResolver(issueSchema),
     defaultValues: {
       title: '',
       description: '',
-      priority: 'MEDIUM' as const,
+      priority: 'MEDIUM',
       assignee_id: '',
       due_date: '',
-      label_ids: [] as string[],
+      label_ids: [],
     },
   });
+
+  const currentPriority = watch('priority');
 
   const toggleLabel = (labelId: string) => {
     setSelectedLabels((prev) => {
@@ -145,7 +149,8 @@ export function CreateIssueDialog({
       toast.success('이슈가 생성되었습니다');
       onClose();
       router.refresh();
-    } catch {
+    } catch (error) {
+      console.error('Issue creation error:', error);
       toast.error('이슈 생성에 실패했습니다');
     } finally {
       setIsLoading(false);
@@ -157,6 +162,7 @@ export function CreateIssueDialog({
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>새 이슈</DialogTitle>
+          <DialogDescription>새로운 이슈를 생성합니다</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
@@ -185,7 +191,7 @@ export function CreateIssueDialog({
             <div className="space-y-2">
               <Label>우선순위</Label>
               <Select
-                defaultValue="MEDIUM"
+                value={currentPriority}
                 onValueChange={(value) => setValue('priority', value as 'HIGH' | 'MEDIUM' | 'LOW')}
               >
                 <SelectTrigger>

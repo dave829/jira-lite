@@ -130,12 +130,13 @@ export function ProjectHeader({ project, isFavorite, canEdit, currentUserId }: P
     <>
       <div className="flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-2 text-sm text-gray-500 mb-1">
-            <Link href={`/teams/${project.team_id}`} className="hover:text-gray-700 flex items-center gap-1">
-              <ArrowLeft className="h-4 w-4" />
-              {project.team.name}
-            </Link>
-          </div>
+          <Link 
+            href="/projects" 
+            className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors mb-1"
+          >
+            <ArrowLeft className="h-4 w-4 mr-1" />
+            프로젝트 목록으로
+          </Link>
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold">{project.name}</h1>
             {project.is_archived && (
@@ -197,6 +198,7 @@ export function ProjectHeader({ project, isFavorite, canEdit, currentUserId }: P
         <DialogContent>
           <DialogHeader>
             <DialogTitle>프로젝트 수정</DialogTitle>
+            <DialogDescription>프로젝트 정보를 수정합니다</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">

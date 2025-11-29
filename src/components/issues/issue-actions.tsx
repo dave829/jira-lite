@@ -9,7 +9,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -59,7 +58,7 @@ export function IssueActions({
   const [description, setDescription] = useState(issue.description || '');
   const [statusId, setStatusId] = useState(issue.status_id);
   const [priority, setPriority] = useState(issue.priority);
-  const [assigneeId, setAssigneeId] = useState(issue.assignee_id || '');
+  const [assigneeId, setAssigneeId] = useState(issue.assignee_id || 'unassigned');
   const [dueDate, setDueDate] = useState(issue.due_date || '');
   const [selectedLabels, setSelectedLabels] = useState<string[]>(
     issue.labels?.map((l) => l.label?.id).filter(Boolean) as string[] || []
@@ -99,9 +98,10 @@ export function IssueActions({
       if (priority !== issue.priority) {
         changes.push({ field: 'priority', old_value: issue.priority, new_value: priority });
       }
-      if (assigneeId !== (issue.assignee_id || '')) {
+      const actualAssigneeId = assigneeId === 'unassigned' ? null : assigneeId;
+      if (actualAssigneeId !== issue.assignee_id) {
         const oldAssignee = teamMembers.find((m) => m.id === issue.assignee_id);
-        const newAssignee = teamMembers.find((m) => m.id === assigneeId);
+        const newAssignee = teamMembers.find((m) => m.id === actualAssigneeId);
         changes.push({ field: 'assignee', old_value: oldAssignee?.name || null, new_value: newAssignee?.name || null });
       }
       if (dueDate !== (issue.due_date || '')) {
@@ -116,7 +116,7 @@ export function IssueActions({
           description: description || null,
           status_id: statusId,
           priority,
-          assignee_id: assigneeId || null,
+          assignee_id: assigneeId === 'unassigned' ? null : assigneeId,
           due_date: dueDate || null,
         })
         .eq('id', issue.id);
@@ -189,34 +189,34 @@ export function IssueActions({
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="icon">
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => setIsEditOpen(true)}>
-            <Pencil className="mr-2 h-4 w-4" />
-            이슈 수정
-          </DropdownMenuItem>
-          {canDelete && (
-            <>
-              <DropdownMenuSeparator />
+      <div className="flex items-center gap-2">
+        <Button variant="outline" onClick={() => setIsEditOpen(true)}>
+          <Pencil className="mr-2 h-4 w-4" />
+          수정
+        </Button>
+        {canDelete && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setIsDeleteOpen(true)} className="text-red-600">
                 <Trash2 className="mr-2 h-4 w-4" />
                 이슈 삭제
               </DropdownMenuItem>
-            </>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
+      </div>
 
       {/* 수정 다이얼로그 */}
       <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>이슈 수정</DialogTitle>
+            <DialogDescription>이슈 정보를 수정합니다</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
@@ -269,7 +269,7 @@ export function IssueActions({
                     <SelectValue placeholder="선택" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">미지정</SelectItem>
+                    <SelectItem value="unassigned">미지정</SelectItem>
                     {teamMembers.map((member) => (
                       <SelectItem key={member.id} value={member.id}>
                         {member.name}

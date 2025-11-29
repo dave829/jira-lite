@@ -1,10 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { FolderKanban, Star } from 'lucide-react';
-import Link from 'next/link';
-import { format } from 'date-fns';
-import { ko } from 'date-fns/locale';
+import { ProjectsPageClient } from '@/components/projects/projects-page-client';
 
 export default async function ProjectsPage() {
   const supabase = await createClient();
@@ -12,13 +7,23 @@ export default async function ProjectsPage() {
 
   if (!user) return null;
 
-  // 내가 속한 팀 ID 조회
+  // 내가 속한 팀 조회
   const { data: teamMembers } = await supabase
     .from('team_members')
-    .select('team_id')
+    .select(`
+      team:teams!inner(id, name, deleted_at)
+    `)
     .eq('user_id', user.id);
 
-  const teamIds = teamMembers?.map(tm => tm.team_id) || [];
+  const teams = (teamMembers || [])
+    .map(tm => {
+      const team = Array.isArray(tm.team) ? tm.team[0] : tm.team;
+      return team;
+    })
+    .filter(team => team && !team.deleted_at)
+    .map(team => ({ id: team.id, name: team.name }));
+
+  const teamIds = teams.map(t => t.id);
 
   // 프로젝트 조회
   const { data: projects } = await supabase
@@ -27,7 +32,7 @@ export default async function ProjectsPage() {
       *,
       team:teams(id, name)
     `)
-    .in('team_id', teamIds)
+    .in('team_id', teamIds.length > 0 ? teamIds : [''])
     .is('deleted_at', null)
     .order('created_at', { ascending: false });
 
@@ -46,60 +51,20 @@ export default async function ProjectsPage() {
     return bFav - aFav;
   });
 
-  return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-foreground">프로젝트</h1>
-        <p className="text-muted-foreground">모든 프로젝트를 확인하세요</p>
-      </div>
+  const formattedProjects = sortedProjects.map(p => ({
+    id: p.id,
+    name: p.name,
+    description: p.description,
+    is_archived: p.is_archived,
+    created_at: p.created_at,
+    team: p.team ? { id: p.team.id, name: p.team.name } : null,
+  }));
 
-      {sortedProjects.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {sortedProjects.map((project) => (
-            <Link key={project.id} href={`/projects/${project.id}`}>
-              <Card className="glass-card hover:shadow-lg transition-all cursor-pointer h-full border-border/50">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg flex items-center gap-2 text-foreground">
-                      {favoriteIds.has(project.id) && (
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      )}
-                      {project.name}
-                    </CardTitle>
-                    {project.is_archived && (
-                      <Badge variant="secondary">아카이브</Badge>
-                    )}
-                  </div>
-                  {project.description && (
-                    <CardDescription className="line-clamp-2">
-                      {project.description}
-                    </CardDescription>
-                  )}
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>{project.team?.name}</span>
-                    <span>{format(new Date(project.created_at), 'M월 d일', { locale: ko })}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      ) : (
-        <Card className="glass-card border-border/50">
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <FolderKanban className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-medium mb-2 text-foreground">프로젝트가 없습니다</h3>
-            <p className="text-muted-foreground mb-4">팀에서 새 프로젝트를 만들어 시작하세요</p>
-            <Link href="/teams/new">
-              <button className="px-4 py-2 bg-foreground text-background rounded-md hover:bg-foreground/90 transition-colors">
-                새 팀 만들기
-              </button>
-            </Link>
-          </CardContent>
-        </Card>
-      )}
-    </div>
+  return (
+    <ProjectsPageClient
+      projects={formattedProjects}
+      teams={teams}
+      favoriteIds={favoriteIds}
+    />
   );
 }

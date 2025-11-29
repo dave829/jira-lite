@@ -1,9 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { createClient } from '@/lib/supabase/client';
 import { Issue, ProjectLabel, ProjectStatus, Comment, IssueHistory, User, AICache } from '@/types';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,10 +13,11 @@ import { SubtaskList } from '@/components/issues/subtask-list';
 import { CommentSection } from '@/components/issues/comment-section';
 import { IssueHistoryList } from '@/components/issues/issue-history-list';
 import { AIFeatures } from '@/components/issues/ai-features';
-import { ArrowLeft, Calendar, User as UserIcon } from 'lucide-react';
+import { ArrowLeft, Calendar, Pencil, Archive } from 'lucide-react';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { PRIORITY_COLORS, PRIORITY_LABELS } from '@/lib/constants';
+import { toast } from 'sonner';
 
 interface IssueDetailProps {
   issue: Issue & {
@@ -52,20 +50,47 @@ export function IssueDetail({
   canEdit,
   canDelete,
 }: IssueDetailProps) {
-  //const router = useRouter();
+  const isArchived = issue.project.is_archived;
+
+  const handleArchivedClick = () => {
+    toast.error(
+      '이 프로젝트는 아카이브 상태입니다. 수정하려면 프로젝트 페이지에서 아카이브를 해제하세요.',
+      {
+        action: {
+          label: '프로젝트로 이동',
+          onClick: () => window.location.href = `/projects/${issue.project_id}`,
+        },
+        duration: 5000,
+      }
+    );
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
+      {/* 아카이브 안내 배너 */}
+      {isArchived && (
+        <div className="flex items-center gap-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800">
+          <Archive className="h-4 w-4" />
+          <span className="text-sm">
+            이 프로젝트는 아카이브 상태입니다. 수정하려면{' '}
+            <Link href={`/projects/${issue.project_id}`} className="underline font-medium">
+              프로젝트 페이지
+            </Link>
+            에서 아카이브를 해제하세요.
+          </span>
+        </div>
+      )}
+
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <Link
           href={`/projects/${issue.project_id}`}
-          className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1"
+          className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          <ArrowLeft className="h-4 w-4" />
-          {issue.project.name}
+          <ArrowLeft className="h-4 w-4 mr-1" />
+          {issue.project.name}으로 돌아가기
         </Link>
-        {canEdit && (
+        {canEdit ? (
           <IssueActions
             issue={issue}
             statuses={statuses}
@@ -73,7 +98,12 @@ export function IssueDetail({
             teamMembers={teamMembers.filter((m): m is User => m !== null)}
             canDelete={canDelete}
           />
-        )}
+        ) : isArchived ? (
+          <Button variant="outline" onClick={handleArchivedClick}>
+            <Pencil className="mr-2 h-4 w-4" />
+            수정
+          </Button>
+        ) : null}
       </div>
 
       {/* 메인 정보 */}

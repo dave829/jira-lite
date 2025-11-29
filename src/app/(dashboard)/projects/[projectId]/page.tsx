@@ -143,6 +143,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           />
         </TabsContent>
       </Tabs>
+
+      {/* 아카이브 안내 문구 */}
+      <p className="text-xs text-muted-foreground/60 text-center mt-8">
+        * 아카이브 기능을 활성화하면 수정을 할 수 없습니다. 프로젝트를 수정하고 싶으시면 아카이브 해제 버튼을 누르세요. 아카이브 해제 버튼은 우측 상단 메뉴(⋮)에 있습니다.
+      </p>
     </div>
   );
 }
