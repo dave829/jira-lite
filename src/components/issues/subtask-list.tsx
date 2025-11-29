@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,34 +26,51 @@ interface SubtaskListProps {
 
 export function SubtaskList({ issueId, subtasks, canEdit }: SubtaskListProps) {
   const router = useRouter();
+  const [localSubtasks, setLocalSubtasks] = useState(subtasks);
   const [newTitle, setNewTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  const completedCount = subtasks.filter((s) => s.is_completed).length;
+  useEffect(() => {
+    setLocalSubtasks(subtasks);
+  }, [subtasks]);
+
+  const completedCount = localSubtasks.filter((s) => s.is_completed).length;
 
   const handleAdd = async () => {
     if (!newTitle.trim()) return;
-    if (subtasks.length >= LIMITS.MAX_SUBTASKS_PER_ISSUE) {
+    if (localSubtasks.length >= LIMITS.MAX_SUBTASKS_PER_ISSUE) {
       toast.error(`이슈당 최대 ${LIMITS.MAX_SUBTASKS_PER_ISSUE}개의 서브태스크만 추가할 수 있습니다`);
       return;
     }
 
+    const tempId = `temp-${Date.now()}`;
+    const newSubtask: Subtask = {
+      id: tempId,
+      title: newTitle,
+      is_completed: false,
+      position: localSubtasks.length,
+    };
+
+    // 낙관적 업데이트
+    setLocalSubtasks((prev) => [...prev, newSubtask]);
+    setNewTitle('');
     setIsAdding(true);
+
     try {
       const supabase = createClient();
       const { error } = await supabase.from('subtasks').insert({
         issue_id: issueId,
-        title: newTitle,
-        position: subtasks.length,
+        title: newSubtask.title,
+        position: newSubtask.position,
       });
 
       if (error) throw error;
-
-      setNewTitle('');
       toast.success('서브태스크가 추가되었습니다');
       router.refresh();
     } catch {
+      // 롤백
+      setLocalSubtasks((prev) => prev.filter((s) => s.id !== tempId));
       toast.error('서브태스크 추가에 실패했습니다');
     } finally {
       setIsAdding(false);
@@ -61,7 +78,16 @@ export function SubtaskList({ issueId, subtasks, canEdit }: SubtaskListProps) {
   };
 
   const handleToggle = async (subtask: Subtask) => {
-    setLoadingId(subtask.id);
+    // 임시 ID인 경우 무시 (아직 서버에 저장 안됨)
+    if (subtask.id.startsWith('temp-')) return;
+
+    // 낙관적 업데이트
+    setLocalSubtasks((prev) =>
+      prev.map((s) =>
+        s.id === subtask.id ? { ...s, is_completed: !s.is_completed } : s
+      )
+    );
+
     try {
       const supabase = createClient();
       const { error } = await supabase
@@ -72,14 +98,28 @@ export function SubtaskList({ issueId, subtasks, canEdit }: SubtaskListProps) {
       if (error) throw error;
       router.refresh();
     } catch {
+      // 롤백
+      setLocalSubtasks((prev) =>
+        prev.map((s) =>
+          s.id === subtask.id ? { ...s, is_completed: subtask.is_completed } : s
+        )
+      );
       toast.error('상태 변경에 실패했습니다');
-    } finally {
-      setLoadingId(null);
     }
   };
 
   const handleDelete = async (subtaskId: string) => {
-    setLoadingId(subtaskId);
+    // 임시 ID인 경우 로컬에서만 삭제
+    if (subtaskId.startsWith('temp-')) {
+      setLocalSubtasks((prev) => prev.filter((s) => s.id !== subtaskId));
+      return;
+    }
+
+    const deletedSubtask = localSubtasks.find((s) => s.id === subtaskId);
+    
+    // 낙관적 업데이트
+    setLocalSubtasks((prev) => prev.filter((s) => s.id !== subtaskId));
+
     try {
       const supabase = createClient();
       const { error } = await supabase
@@ -88,13 +128,14 @@ export function SubtaskList({ issueId, subtasks, canEdit }: SubtaskListProps) {
         .eq('id', subtaskId);
 
       if (error) throw error;
-
       toast.success('서브태스크가 삭제되었습니다');
       router.refresh();
     } catch {
+      // 롤백
+      if (deletedSubtask) {
+        setLocalSubtasks((prev) => [...prev, deletedSubtask].sort((a, b) => a.position - b.position));
+      }
       toast.error('서브태스크 삭제에 실패했습니다');
-    } finally {
-      setLoadingId(null);
     }
   };
 
@@ -110,18 +151,18 @@ export function SubtaskList({ issueId, subtasks, canEdit }: SubtaskListProps) {
       </CardHeader>
       <CardContent className="space-y-3">
         {/* 진행률 바 */}
-        {subtasks.length > 0 && (
+        {localSubtasks.length > 0 && (
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div
               className="bg-green-500 h-2 rounded-full transition-all"
-              style={{ width: `${(completedCount / subtasks.length) * 100}%` }}
+              style={{ width: `${(completedCount / localSubtasks.length) * 100}%` }}
             />
           </div>
         )}
 
         {/* 서브태스크 목록 */}
         <div className="space-y-2">
-          {subtasks.map((subtask) => (
+          {localSubtasks.map((subtask) => (
             <div
               key={subtask.id}
               className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 group"
