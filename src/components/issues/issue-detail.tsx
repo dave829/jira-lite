@@ -34,6 +34,7 @@ interface IssueDetailProps {
   teamMembers: (User | null)[];
   aiCache: AICache[];
   currentUserId: string;
+  currentUser?: User | null;
   canEdit: boolean;
   canDelete: boolean;
 }
@@ -47,6 +48,7 @@ export function IssueDetail({
   teamMembers,
   aiCache,
   currentUserId,
+  currentUser,
   canEdit,
   canDelete,
 }: IssueDetailProps) {
@@ -204,6 +206,7 @@ export function IssueDetail({
             issueId={issue.id}
             comments={comments}
             currentUserId={currentUserId}
+            currentUser={currentUser}
             canEdit={canEdit}
           />
         </TabsContent>

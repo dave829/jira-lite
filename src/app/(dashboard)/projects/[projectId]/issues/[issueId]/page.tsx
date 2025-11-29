@@ -111,6 +111,13 @@ export default async function IssuePage({ params }: IssuePageProps) {
     membership.role === 'OWNER' ||
     membership.role === 'ADMIN';
 
+  // 현재 사용자 정보 조회
+  const { data: currentUser } = await supabase
+    .from('users')
+    .select('id, name, email, profile_image')
+    .eq('id', user.id)
+    .maybeSingle();
+
   return (
     <IssueDetail
       issue={{
@@ -125,6 +132,7 @@ export default async function IssuePage({ params }: IssuePageProps) {
       teamMembers={teamMembers?.map((tm) => tm.user).filter(Boolean) || []}
       aiCache={aiCache || []}
       currentUserId={user.id}
+      currentUser={currentUser}
       canEdit={canEdit}
       canDelete={canDelete}
     />

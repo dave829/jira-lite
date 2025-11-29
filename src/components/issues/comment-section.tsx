@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { Comment, User } from '@/types';
@@ -17,6 +17,7 @@ interface CommentSectionProps {
   issueId: string;
   comments: (Comment & { user: User | null })[];
   currentUserId: string;
+  currentUser?: User | null;
   canEdit: boolean;
 }
 
@@ -24,25 +25,48 @@ export function CommentSection({
   issueId,
   comments,
   currentUserId,
+  currentUser,
   canEdit,
 }: CommentSectionProps) {
   const router = useRouter();
+  const [localComments, setLocalComments] = useState(comments);
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
+  useEffect(() => {
+    setLocalComments(comments);
+  }, [comments]);
+
   const handleSubmit = async () => {
     if (!newComment.trim()) return;
 
+    const tempId = `temp-${Date.now()}`;
+    const now = new Date().toISOString();
+    const tempComment: Comment & { user: User | null } = {
+      id: tempId,
+      issue_id: issueId,
+      user_id: currentUserId,
+      content: newComment,
+      created_at: now,
+      updated_at: now,
+      deleted_at: null,
+      user: currentUser ?? null,
+    };
+
+    // 낙관적 업데이트
+    setLocalComments((prev) => [...prev, tempComment]);
+    setNewComment('');
     setIsSubmitting(true);
+
     try {
       const supabase = createClient();
       const { error } = await supabase.from('comments').insert({
         issue_id: issueId,
         user_id: currentUserId,
-        content: newComment,
+        content: tempComment.content,
       });
 
       if (error) throw error;
@@ -54,10 +78,11 @@ export function CommentSection({
         .eq('issue_id', issueId)
         .eq('type', 'comment_summary');
 
-      setNewComment('');
       toast.success('댓글이 작성되었습니다');
       router.refresh();
     } catch {
+      // 롤백
+      setLocalComments((prev) => prev.filter((c) => c.id !== tempId));
       toast.error('댓글 작성에 실패했습니다');
     } finally {
       setIsSubmitting(false);
@@ -66,8 +91,19 @@ export function CommentSection({
 
   const handleEdit = async (commentId: string) => {
     if (!editContent.trim()) return;
+    // 임시 ID인 경우 무시
+    if (commentId.startsWith('temp-')) return;
 
-    setLoadingId(commentId);
+    const originalComment = localComments.find((c) => c.id === commentId);
+    
+    // 낙관적 업데이트
+    setLocalComments((prev) =>
+      prev.map((c) =>
+        c.id === commentId ? { ...c, content: editContent, updated_at: new Date().toISOString() } : c
+      )
+    );
+    setEditingId(null);
+
     try {
       const supabase = createClient();
       const { error } = await supabase
@@ -76,19 +112,31 @@ export function CommentSection({
         .eq('id', commentId);
 
       if (error) throw error;
-
-      setEditingId(null);
       toast.success('댓글이 수정되었습니다');
       router.refresh();
     } catch {
+      // 롤백
+      if (originalComment) {
+        setLocalComments((prev) =>
+          prev.map((c) => (c.id === commentId ? originalComment : c))
+        );
+      }
       toast.error('댓글 수정에 실패했습니다');
-    } finally {
-      setLoadingId(null);
     }
   };
 
   const handleDelete = async (commentId: string) => {
-    setLoadingId(commentId);
+    // 임시 ID인 경우 로컬에서만 삭제
+    if (commentId.startsWith('temp-')) {
+      setLocalComments((prev) => prev.filter((c) => c.id !== commentId));
+      return;
+    }
+
+    const deletedComment = localComments.find((c) => c.id === commentId);
+    
+    // 낙관적 업데이트
+    setLocalComments((prev) => prev.filter((c) => c.id !== commentId));
+
     try {
       const supabase = createClient();
       const { error } = await supabase
@@ -97,13 +145,14 @@ export function CommentSection({
         .eq('id', commentId);
 
       if (error) throw error;
-
       toast.success('댓글이 삭제되었습니다');
       router.refresh();
     } catch {
+      // 롤백
+      if (deletedComment) {
+        setLocalComments((prev) => [...prev, deletedComment]);
+      }
       toast.error('댓글 삭제에 실패했습니다');
-    } finally {
-      setLoadingId(null);
     }
   };
 
@@ -119,9 +168,9 @@ export function CommentSection({
       </CardHeader>
       <CardContent className="space-y-4">
         {/* 댓글 목록 */}
-        {comments.length > 0 ? (
+        {localComments.length > 0 ? (
           <div className="space-y-4">
-            {comments.map((comment) => (
+            {localComments.map((comment) => (
               <div key={comment.id} className="flex gap-3">
                 <Avatar className="h-8 w-8">
                   <AvatarImage src={comment.user?.profile_image || undefined} />
