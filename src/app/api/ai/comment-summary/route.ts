@@ -30,9 +30,10 @@ export async function POST(request: Request) {
     }
 
     // 댓글 내용 포맷팅
-    const commentTexts = comments.map(
-      (c) => `${c.user?.name || '익명'}: ${c.content}`
-    );
+    const commentTexts = comments.map((c) => {
+      const user = Array.isArray(c.user) ? c.user[0] : c.user;
+      return `${user?.name || '익명'}: ${c.content}`;
+    });
 
     // AI 댓글 요약 생성
     const summary = await generateCommentSummary(commentTexts);
