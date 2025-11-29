@@ -62,7 +62,7 @@ export function IssueActions({
   const [assigneeId, setAssigneeId] = useState(issue.assignee_id || '');
   const [dueDate, setDueDate] = useState(issue.due_date || '');
   const [selectedLabels, setSelectedLabels] = useState<string[]>(
-    issue.labels?.map((l) => l?.id).filter(Boolean) as string[] || []
+    issue.labels?.map((l) => l.label?.id).filter(Boolean) as string[] || []
   );
 
   const toggleLabel = (labelId: string) => {
@@ -291,22 +291,25 @@ export function IssueActions({
               <div className="space-y-2">
                 <Label>라벨</Label>
                 <div className="flex flex-wrap gap-2">
-                  {projectLabels.map((label) => (
-                    <Badge
-                      key={label.id}
-                      variant={selectedLabels.includes(label.id) ? 'default' : 'outline'}
-                      className="cursor-pointer"
-                      style={{
-                        backgroundColor: selectedLabels.includes(label.id) ? label.color : 'transparent',
-                        borderColor: label.color,
-                        color: selectedLabels.includes(label.id) ? 'white' : label.color,
-                      }}
-                      onClick={() => toggleLabel(label.id)}
-                    >
-                      {label.name}
-                      {selectedLabels.includes(label.id) && <X className="ml-1 h-3 w-3" />}
-                    </Badge>
-                  ))}
+                  {projectLabels.map((label) => {
+                    const labelId = label.id as string;
+                    return (
+                      <Badge
+                        key={labelId}
+                        variant={selectedLabels.includes(labelId) ? 'default' : 'outline'}
+                        className="cursor-pointer"
+                        style={{
+                          backgroundColor: selectedLabels.includes(labelId) ? label.color : 'transparent',
+                          borderColor: label.color,
+                          color: selectedLabels.includes(labelId) ? 'white' : label.color,
+                        }}
+                        onClick={() => toggleLabel(labelId)}
+                      >
+                        {label.name}
+                        {selectedLabels.includes(labelId) && <X className="ml-1 h-3 w-3" />}
+                      </Badge>
+                    );
+                  })}
                 </div>
               </div>
             )}
