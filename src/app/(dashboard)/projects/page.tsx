@@ -49,18 +49,18 @@ export default async function ProjectsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">프로젝트</h1>
-        <p className="text-gray-500">모든 프로젝트를 확인하세요</p>
+        <h1 className="text-2xl font-bold text-foreground">프로젝트</h1>
+        <p className="text-muted-foreground">모든 프로젝트를 확인하세요</p>
       </div>
 
       {sortedProjects.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {sortedProjects.map((project) => (
             <Link key={project.id} href={`/projects/${project.id}`}>
-              <Card className="hover:shadow-md transition-shadow cursor-pointer h-full">
+              <Card className="glass-card hover:shadow-lg transition-all cursor-pointer h-full border-border/50">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg flex items-center gap-2">
+                    <CardTitle className="text-lg flex items-center gap-2 text-foreground">
                       {favoriteIds.has(project.id) && (
                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                       )}
@@ -77,7 +77,7 @@ export default async function ProjectsPage() {
                   )}
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between text-sm text-gray-500">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <span>{project.team?.name}</span>
                     <span>{format(new Date(project.created_at), 'M월 d일', { locale: ko })}</span>
                   </div>
@@ -87,11 +87,16 @@ export default async function ProjectsPage() {
           ))}
         </div>
       ) : (
-        <Card>
+        <Card className="glass-card border-border/50">
           <CardContent className="flex flex-col items-center justify-center py-12">
-            <FolderKanban className="h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium mb-2">프로젝트가 없습니다</h3>
-            <p className="text-gray-500">팀에서 새 프로젝트를 만들어 시작하세요</p>
+            <FolderKanban className="h-12 w-12 text-muted-foreground mb-4" />
+            <h3 className="text-lg font-medium mb-2 text-foreground">프로젝트가 없습니다</h3>
+            <p className="text-muted-foreground mb-4">팀에서 새 프로젝트를 만들어 시작하세요</p>
+            <Link href="/teams/new">
+              <button className="px-4 py-2 bg-foreground text-background rounded-md hover:bg-foreground/90 transition-colors">
+                새 팀 만들기
+              </button>
+            </Link>
           </CardContent>
         </Card>
       )}

@@ -89,37 +89,38 @@ export default function NewTeamPage() {
   return (
     <div className="max-w-lg mx-auto">
       <div className="mb-6">
-        <Link href="/teams" className="text-sm text-gray-500 hover:text-gray-700 flex items-center gap-1">
+        <Link href="/teams" className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">
           <ArrowLeft className="h-4 w-4" />
           팀 목록으로
         </Link>
       </div>
 
-      <Card>
+      <Card className="glass-card border-border/50">
         <CardHeader>
-          <CardTitle>새 팀 만들기</CardTitle>
+          <CardTitle className="text-foreground">새 팀 만들기</CardTitle>
           <CardDescription>팀을 만들어 프로젝트를 함께 관리하세요</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">팀 이름</Label>
+              <Label htmlFor="name" className="text-foreground">팀 이름</Label>
               <Input
                 id="name"
                 placeholder="예: 개발팀"
+                className="bg-background/50 border-border"
                 {...register('name')}
               />
               {errors.name && (
-                <p className="text-sm text-red-500">{errors.name.message}</p>
+                <p className="text-sm text-destructive">{errors.name.message}</p>
               )}
             </div>
             <div className="flex gap-2">
-              <Button type="submit" disabled={isLoading}>
+              <Button type="submit" disabled={isLoading} className="bg-foreground text-background hover:bg-foreground/90">
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 팀 만들기
               </Button>
               <Link href="/teams">
-                <Button type="button" variant="outline">
+                <Button type="button" variant="outline" className="border-border">
                   취소
                 </Button>
               </Link>
