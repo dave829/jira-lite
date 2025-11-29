@@ -53,10 +53,15 @@ export function CreateIssueDialog({
     handleSubmit,
     setValue,
     formState: { errors },
-  } = useForm<IssueInput>({
+  } = useForm({
     resolver: zodResolver(issueSchema),
     defaultValues: {
-      priority: 'MEDIUM',
+      title: '',
+      description: '',
+      priority: 'MEDIUM' as const,
+      assignee_id: '',
+      due_date: '',
+      label_ids: [] as string[],
     },
   });
 
