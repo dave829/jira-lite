@@ -40,13 +40,14 @@ export default async function TeamsPage() {
   // 각 팀의 멤버 수 조회
   const teams = await Promise.all(
     (teamMembers || []).map(async (tm) => {
+      const team = Array.isArray(tm.team) ? tm.team[0] : tm.team;
       const { count } = await supabase
         .from('team_members')
         .select('*', { count: 'exact', head: true })
-        .eq('team_id', tm.team?.id);
+        .eq('team_id', team?.id);
       
       return {
-        ...tm.team,
+        ...team,
         role: tm.role,
         memberCount: count || 0,
       };
