@@ -63,6 +63,7 @@ export interface ProjectStatus {
   color: string;
   position: number;
   is_default: boolean;
+    wip_limit?: number | null;  // 추가
 }
 
 export interface ProjectLabel {
@@ -131,7 +132,7 @@ export interface Comment {
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
-  user?: User;
+  user?: User | null;
 }
 
 // AI Types
