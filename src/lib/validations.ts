@@ -81,7 +81,7 @@ export const issueSchema = z.object({
     .max(LIMITS.ISSUE_DESCRIPTION_MAX)
     .nullable()
     .optional(),
-  priority: z.enum(['HIGH', 'MEDIUM', 'LOW']).default('MEDIUM'),
+  priority: z.enum(['HIGH', 'MEDIUM', 'LOW']),
   assignee_id: z.string().uuid().nullable().optional(),
   due_date: z.string().nullable().optional(),
   label_ids: z.array(z.string().uuid()).max(LIMITS.MAX_LABELS_PER_ISSUE).optional(),
