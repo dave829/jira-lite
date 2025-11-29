@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { findDuplicates } from '@/lib/ai/openai';
+import { findDuplicates } from '@/lib/ai/gemini';
 import { NextResponse } from 'next/server';
 
 export async function POST(request: Request) {

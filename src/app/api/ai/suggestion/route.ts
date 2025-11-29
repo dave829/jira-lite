@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
-import { generateSuggestion } from '@/lib/ai/openai';
+import { generateSuggestion } from '@/lib/ai/gemini';
 import { NextResponse } from 'next/server';
 import { LIMITS } from '@/lib/constants';
 
