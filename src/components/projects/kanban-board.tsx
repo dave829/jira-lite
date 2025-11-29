@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { createClient } from '@/lib/supabase/client';
@@ -31,6 +31,11 @@ export function KanbanBoard({
   const router = useRouter();
   const [localIssues, setLocalIssues] = useState(issues);
   const [createStatusId, setCreateStatusId] = useState<string | null>(null);
+
+  // issues prop이 변경되면 localIssues 동기화
+  useEffect(() => {
+    setLocalIssues(issues);
+  }, [issues]);
 
   const getIssuesByStatus = (statusId: string) => {
     return localIssues
