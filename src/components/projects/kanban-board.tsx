@@ -6,7 +6,7 @@ import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea
 import { createClient } from '@/lib/supabase/client';
 import { Issue, ProjectStatus, ProjectLabel, User } from '@/types';
 import { IssueCard } from './issue-card';
-import { CreateIssueDialog } from './create-issue-dialog';
+import { CreateIssueDialog } from '@/components/projects/create-issue-dialog';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { toast } from 'sonner';
