@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { notFound, redirect } from 'next/navigation';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { KanbanBoard } from '@/components/projects/kanban-board';
+import { KanbanBoard } from '@/components/projects/kanban-board'
 import { IssueList } from '@/components/projects/issue-list';
 import { ProjectHeader } from '@/components/projects/project-header';
 import { ProjectDashboard } from '@/components/projects/project-dashboard';
@@ -120,7 +120,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             statuses={statuses || []}
             issues={issues || []}
             labels={labels || []}
-            teamMembers={teamMembers?.map(tm => tm.user) || []}
+            teamMembers={teamMembers?.map(tm => tm.user).flat().filter(Boolean) || []}
             isArchived={project.is_archived}
           />
         </TabsContent>
@@ -131,7 +131,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             issues={issues || []}
             statuses={statuses || []}
             labels={labels || []}
-            teamMembers={teamMembers?.map(tm => tm.user) || []}
+            teamMembers={teamMembers?.map(tm => tm.user).flat().filter(Boolean) || []}
             isArchived={project.is_archived}
           />
         </TabsContent>
