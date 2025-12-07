@@ -59,18 +59,29 @@ export default function SignUpPage() {
   };
 
   const handleGoogleLogin = async () => {
+    console.log('[SignUp] handleGoogleLogin clicked');
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
+          skipBrowserRedirect: true,
         },
       });
       if (error) {
+        console.error('[SignUp] Google OAuth error', error);
         toast.error('Google 로그인 중 오류가 발생했습니다');
+        return;
       }
-    } catch {
+      if (data?.url) {
+        console.log('[SignUp] redirecting to', data.url);
+        window.location.href = data.url;
+      } else {
+        console.log('[SignUp] signInWithOAuth completed without url; SDK may have already redirected');
+      }
+    } catch (err) {
+      console.error('[SignUp] Google OAuth exception', err);
       toast.error('Google 로그인 중 오류가 발생했습니다');
     }
   };

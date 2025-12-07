@@ -51,20 +51,34 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = async () => {
+    console.log('[Login] handleGoogleLogin clicked');
     setIsGoogleLoading(true);
     try {
       const supabase = createClient();
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback`,
+          // ensure the SDK returns a url when skipBrowserRedirect is true
+          skipBrowserRedirect: true,
         },
       });
 
       if (error) {
+        console.error('[Login] Google OAuth error', error);
         toast.error('Google 로그인에 실패했습니다');
+        return;
       }
-    } catch {
+
+      // If the SDK returns a url (when skipBrowserRedirect=true) navigate the browser
+      if (data?.url) {
+        console.log('[Login] redirecting to', data.url);
+        window.location.href = data.url;
+      } else {
+        console.log('[Login] signInWithOAuth completed without url; SDK may have already redirected');
+      }
+    } catch (err) {
+      console.error('[Login] Google OAuth exception', err);
       toast.error('Google 로그인 중 오류가 발생했습니다');
     } finally {
       setIsGoogleLoading(false);

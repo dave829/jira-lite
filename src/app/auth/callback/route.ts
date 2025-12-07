@@ -9,7 +9,7 @@ export async function GET(request: Request) {
   if (code) {
     const supabase = await createClient();
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    
+
     if (!error && data.user) {
       // Google OAuth 사용자의 경우 users 테이블에 프로필 생성
       const { data: existingUser } = await supabase
